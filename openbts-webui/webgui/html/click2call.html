@@ -1,0 +1,353 @@
+<html><head>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+<title> Click2Call Widget API</title>
+<link rel="stylesheet" type="text/css" href="Click2Call%20Widget%20API_files/doddle.css">
+</head>
+<body>
+<script type="text/javascript"> 
+
+
+function getUrlVars()
+{
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for(var i = 0; i < hashes.length; i++)
+    {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    return vars;
+}
+
+
+function DisplayMessage(mensaje, clase) {
+
+  if (typeof(statusbox) == 'undefined') statusbox = document.getElementById('statusbox');
+
+  statusbox.firstChild.innerHTML = mensaje;
+
+  if (statusbox.className != clase) statusbox.className = clase;
+
+}
+
+
+function Logout(){
+ var applet = (document.webphone.length) ? document.webphone[1] : document.webphone;
+ applet.Logout();
+ isLogged = 0;
+}
+
+
+var LS_REGISTERED      = 21000;   
+var LS_REGISTER_FAILED = 24000;
+var LS_REGISTER_FAILED_NOT_CONNECT = LS_REGISTER_FAILED + 1;
+var LS_REGISTER_FAILED_NOT_AUTHORIZED  = LS_REGISTER_FAILED + 2;
+var LS_REGISTER_FAILED_TIMEOUT = LS_REGISTER_FAILED + 3;
+var CS_REMOTE_ALERTING = 3000;
+var CS_CONNECTED       = 4000;
+var CS_DISCONNECTED    = 8000;
+var CS_ALERTING        = 10000;
+var CS_CAUSE_NORMAL    = 1;
+var CS_CAUSE_BUSY      = 8;
+var CS_CAUSE_CODEC_FAILURE = 21;
+var APP_LOADED         = 1010;    
+
+
+var isLogged = 0;   
+var incomingCall = 0;
+var allowLogin = 0;
+var already_connected = 0;
+var alreadyLoaded = 0;
+
+
+ var session_lock = false;
+
+ 
+var isFirstCall = true;
+
+
+function eventHandler(msg) {
+
+	switch (parseInt(msg)) {
+
+	case CS_CAUSE_NORMAL:
+       DisplayMessage('Finished ' + time_str(duration), 'autenticando');
+
+     //alert('Finished: ' + time_str(duration));
+      session_lock = false;
+     stopTimer();
+     already_connected = 0;
+     break;
+
+	case CS_CAUSE_CODEC_FAILURE:
+
+      alert('Media not supported');
+      session_lock = false;
+      break;
+
+	case CS_CAUSE_BUSY:
+
+     DisplayMessage('Busy', 'autenticando');
+     session_lock = false;
+      break;
+
+	case CS_DISCONNECTED:
+
+       DisplayMessage('Finished' + time_str(duration), 'autenticando');
+      session_lock = false;
+      stopTimer();
+      break;
+
+	case CS_REMOTE_ALERTING:
+
+       DisplayMessage('Alerting', 'autenticando');
+      break;
+
+    case CS_CONNECTED:
+
+      if(!already_connected){
+      DisplayMessage('Connected!', 'autenticando');
+      already_connected = 1;
+      startTimer();
+      incomingCall = 0;
+      }
+
+      break;
+
+    case APP_LOADED:
+
+      allowLogin = 1;
+
+        DisplayMessage('Connecting...', 'autenticando');
+       if(!alreadyLoaded){
+        
+          alreadyLoaded = 1;
+          Login();
+       }
+
+
+      break;
+
+    case CS_ALERTING:
+
+      incomingCall = 1; 
+      break;
+
+    case LS_REGISTERED:
+
+      if (!isLogged)
+      isLogged = 1;
+      if(isFirstCall)
+      {
+      	isFirstCall = false;
+      	DisplayMessage('Calling', 'autenticando');
+ 	  	Call();	
+ 	  }
+
+ 	     break;
+
+    case LS_REGISTER_FAILED:
+
+     DisplayMessage('Unauthorized', 'autenticando'); 
+      //alert('Login Failed');
+      break;
+
+    case LS_REGISTER_FAILED_NOT_AUTHORIZED:
+
+      //alert('Unregistered::Unauthorized');
+       DisplayMessage('Unregistered::Unauthorized', 'autenticando');  
+
+      break;
+
+    case LS_REGISTER_FAILED_TIMEOUT:
+
+      alert('Timeout');
+
+      break;
+
+    case LS_REGISTER_FAILED_NOT_CONNECT:
+
+      alert('Connection Problem');
+      break;
+
+    default:
+
+      break;
+
+  }
+
+} 
+ 
+
+function Answer(){
+    var applet = (document.webphone.length) ? document.webphone[1] : document.webphone;
+    applet.Accept();
+}  
+
+function Call() { 
+	
+var applet = (document.webphone.length) ? document.webphone[1] : document.webphone;
+
+
+var callto =	 getUrlVars()["callto"];
+
+
+	if(!session_lock)
+	{
+		//applet.Call('your_phone_number'); // EDIT HERE!!
+
+		applet.Call(callto); // EDIT HERE!!
+		session_lock = true;
+		DisplayMessage('Calling!', 'test');
+	}else{
+		DisplayMessage('Call is active', 'test');
+
+	}
+  
+
+}
+
+
+function Hangup() {
+
+	if(session_lock)
+	{
+		DisplayMessage('Disconnecting', 'autenticando');
+	}
+
+  var applet = (document.webphone.length) ? document.webphone[1] : document.webphone;
+  applet.Hangup();
+}
+
+
+function SendDTMF() {
+// alert("Sending dtmf: "+ document.data.dtmf_digit.value);
+ var applet = (document.webphone.length) ? document.webphone[1] : document.webphone;
+ applet.SendDTMF(document.data.dtmf_digit.value);
+}
+
+function Login(){
+
+  var control = (document.webphone.length) ? document.webphone[1] : document.webphone;
+  var sipserver = null; 
+  var stun = null;
+  var username = null;
+  var auth_user = null;
+  var password = null;    
+  var proxy = null;
+  var realm = null;
+   // EDIT HERE!! 
+  //// user, auth-userName, passWord, sipServer,outBoundProxy, realm, Stun  
+
+  
+   sipserver = getUrlVars()["sipserver"];
+   
+   username = getUrlVars()["username"];
+   auth_user = username;
+   password = getUrlVars()["password"];
+
+
+   if(typeof getUrlVars()["proxy"] != 'undefined')
+   {
+			proxy = getUrlVars()["proxy"];
+	}
+   if(typeof getUrlVars()["auth_user"] != 'undefined')
+   {
+	   auth_user = getUrlVars()["auth_user"];
+	}
+   
+  //control.Login("your_user", "your_user", "your_poassword", "your_sip", null, null, "your_stun");
+   
+	control.Login(username, auth_user, password, sipserver, proxy,
+			null, null, false);
+}
+
+
+function contactIDHandler(contactID) {
+
+  if (incomingCall) {
+    var answer = confirm('Incoming call from ' + contactID + ', do you want to answer?');
+    if (answer) {
+      Answer();
+
+    } else {
+      incomingCall = 0;
+      Hangup();
+
+    }
+
+  }
+
+}
+
+var timer;
+var duration = -1;
+
+function startTimer() {
+
+  duration++;
+  //alert("Connected: " + time_str(duration));
+   DisplayMessage("Connected: " + time_str(duration), 1);
+  timer = setTimeout("startTimer()", 1000);
+}
+
+function time_str(d) {
+
+  d = Number(d);
+  if (d < 0) d = 0;
+  var hours = Math.floor(d / 3600);
+  d = d - 3600 * hours;
+  var mins = Math.floor(d / 60);
+  d = d - 60 * mins;
+  var secs = d;
+
+  if (hours < 10) hours = "0" + hours;
+  if (mins < 10) mins = "0" + mins;
+  if (secs < 10) secs = "0" + secs;
+
+  return (hours > 0 ? hours + ':' : '') + mins + ':' + secs;
+
+}
+
+function stopTimer() {
+  clearTimeout(timer);
+  duration = -1;
+}  
+
+</script>
+
+
+	<object name="webphone" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" codebase="https://java.sun.com/update/1.6.0/jinstall-6-windows-i586.cab#Version=6,0,0,0" height="1" width="1">
+		<param name="java_version" value="1.6_10+">
+		<param name="code" value="com.webphone.sip.WebSipPhone.class">
+		<param name="codebase" value="http://www.doddlephone.com/evaluation/">
+		<param name="webphone_subdir" value="/evaluation">
+		<param name="webphone_domain" value="http://www.doddlephone.com">
+		<param name="archive" value="customdoddlephone-core.jar">
+		<param name="separate_jvm" value="true">
+		<param name="mayscript" value="true">
+		<param name="cprt" value="Copyright (c) 2011 by Doddle WebPhone - All Rights Reserved www.doddlephone.com">
+		<comment> <!-- Non-WinIE Browsers --> <embed name="webphone" classid="java:com.webphone.sip.WebSipPhone.class" type="application/x-java-applet" pluginspage="http://java.sun.com/update/1.6.0/jre-6-windows-i586.xpi" java_version="1.6_10+" code="com.webphone.sip.WebSipPhone.class" codebase="http://www.doddlephone.com/evaluation/" archive="customdoddlephone-core.jar" webphone_subdir="/evaluation" webphone_domain="http://www.doddlephone.com" separate_jvm="true" cprt="Copyright (c) 2011 by Doddle WebPhone - All Rights Reserved www.doddlephone.com" mayscript="true" height="1" width="1">
+		 </comment>
+	</object>
+
+
+<div id="container">
+  <div id="fonito">
+ <div id="statusbox" class="esperando"><span>Loading...wait</span></div>
+     <div id="marcabox">
+          <table><tbody><tr><td>
+            <a href="javascript:Call();" id="boton_llamar"><img src="Click2Call%20Widget%20API_files/llamar.gif" alt="Chamar" title="Call"></a>
+          </td><td>
+            <a href="javascript:Hangup();" id="boton_colgar"><img src="Click2Call%20Widget%20API_files/colgar.gif" alt="End" title="End"></a>
+          </td></tr></tbody></table>
+        </div>
+      </div>
+</div>
+
+
+
+</body></html>

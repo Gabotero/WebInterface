@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<title>SubscriberRegistry - {{ pagename }}</title>
+	<link rel="stylesheet" type="text/css" href="/media/css/style.css" />
+</head>
+<body>
+	<div id='cssmenu'>
+		<ul>
+			<li {% if mastername == "OpenBTS" %}class="active"{% endif %}><a href='/openbts/main'><span>OpenBTS</span></a></li>
+			<li {% if mastername == "Smqueue" %}class="active"{% endif %}><a href='/smqueue/actions'><span>Smqueue</span></a></li>
+			<li {% if mastername == "SubscriberRegistry" %}class="active"{% endif %}><a href='/subscriberregistry/actions'><span>SubscriberRegistry</span></a></li>
+			
+		</ul>
+	</div>
+	<div id="submenu">
+		<ul class="submenu">
+			<li><a href="/subscriberregistry/actions" {% if pagename == "Actions" %}class="active"{% endif %}><span>Actions</span></a></li>
+			<li><a href="/subscriberregistry/configuration" {% if pagename == "Configuration" %}class="active"{% endif %}><span>Configuration</span></a></li>
+			<li><a href="/subscriberregistry/subscribers" {% if pagename == "Subscribers" %}class="active"{% endif %}><span>Subscribers</span></a></li>
+		</ul>
+	</div>
+<div id="content">
+{% if dialdata %}
+	<div class="borderdiv">
+	<h2>Dial Data</h2>
+	<table class="status">
+		<tr class="trheader"><td>ID</td><td>Caller ID</td><td>IMSI</td></tr>
+		{% for line in dialdata %}
+		<tr><td>{{ line.id }}</td><td>{{ line.dialerid }}</td><td>{{ line.imsi }}</td></tr>
+		{% endfor %}
+	</table>
+	</div>
+{% endif %}
+</div>
+</body>
+</html>

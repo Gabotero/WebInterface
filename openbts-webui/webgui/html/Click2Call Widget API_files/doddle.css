@@ -1,0 +1,143 @@
+
+#container {
+ width: 200px;
+ margin: auto;
+}
+
+#footer {
+ font-size: 9px;
+}
+
+#fonito {
+ text-align: center;
+ background-color: #F7F7F7;
+ background: url(./style/bg_box2.png) repeat-x bottom;
+ border: 1px solid #DDD;
+ border-radius: 16px;
+ -moz-border-radius: 16px;
+ -webkit-border-radius: 16px;
+ text-align: center;
+ padding: 5px 25px;
+ margin: 15px auto;
+}
+
+#fonito table {
+ width: 150px;
+}
+
+#statusbox {
+ color: #888;
+ text-align: center;
+ background-repeat: no-repeat;
+ background-position: top center;
+ padding: 0;
+ margin: 0 0 10px;
+ border: 1px solid transparent;
+ _border-color: white;
+ height: 55px;
+}
+
+#statusbox span {
+ display: block;
+ margin-top: 38px;
+}
+
+.esperando {
+ background-image: url(loading.gif);
+}
+
+.autenticando {
+ //background-image: url(lock.gif);
+ background-image: url(logo_netcom_webphone_3.png);
+}
+
+.terminado_ok {
+ background-image: url(ok.gif);
+}
+
+.llamando {
+ background-image: url(telefono.gif);
+}
+
+.conectado {
+ background-image: url(reloj.gif);
+}
+
+.ocupado {
+ background-image: url(ocupado.gif);
+}
+
+.recibiendo {
+ background-image: url(c2t/telefono.gif);
+}
+
+.error {
+ background-image: url(c2t/error.gif);
+}
+
+
+#displaybox {
+ height: 85px;
+}
+
+
+#userid, #passwd {
+ font-style: italic;
+ color: #888;
+ width: 100%;
+}
+
+#userid.activo, #passwd.activo {
+ font-style: normal;
+ color: black;
+}
+
+
+#boton_login:link, #boton_login:visited {
+ color: #444;
+}
+
+
+
+#display_holder {
+ width: 100%;
+ border: 1px solid #DDD;
+ -moz-border-radius: 8px;
+ text-align: center;
+ font-family: "Courier new", monospace;
+ font-size: 16px;
+ font-weight: bold;
+ color: black;
+ margin-top: 5px;
+ margin-bottom: 10px;
+}
+
+#boton_llamar, #boton_colgar {
+ display: block;
+ line-height: 50px;
+ background: url(style/bg_nav.gif) repeat-x bottom;
+ border: 1px solid #DDD;
+ -moz-border-radius: 16px;
+}
+
+#boton_llamar span, #boton_colgar span {
+ display: none;
+}
+
+#boton_llamar img, #boton_colgar img {
+ border: 0;
+ margin: 10px 0;
+}
+
+#boton_llamar:link, #boton_llamar:visited,
+#boton_colgar:link, #boton_colgar:visited {
+ text-decoration: none;
+ color: #444;
+}
+
+
+#numpad.activo a:focus {
+ background: #DDD;
+}
+
+

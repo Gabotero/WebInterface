@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+  <title>OpenBTS - {{ pagename }}</title>
+  <script src="/media/js/jquery.js" type="text/javascript"></script>
+  <script type="text/javascript">
+	function loadTabs(){
+		var tabs = $('#tabs-titles li'); //grab tabs
+		var contents = $('#tabs-contents div'); //grab contents
+		tabs.bind('click',function(){
+		contents.hide(); //hide all contents
+		tabs.removeClass('current'); //remove 'current' classes
+		$(contents[$(this).index()]).show(); //show tab content that matches tab title index
+		$(this).addClass('current'); //add current class on clicked tab title
+	});}
+	function sendFormDelete(paramName){
+		var frm = document.deleteParam;
+		frm.paramToDelete.value=paramName;
+		frm.submit();
+	}
+	</script>
+	<link rel="stylesheet" type="text/css" href="/media/css/style.css" />
+</head>
+<body onload="loadTabs()">
+	<div id='cssmenu'>
+		<ul>
+			<li {% if mastername == "OpenBTS" %}class="active"{% endif %}><a href='/openbts/main'><span>OpenBTS</span></a></li>
+			<li {% if mastername == "Smqueue" %}class="active"{% endif %}><a href='/smqueue/actions'><span>Smqueue</span></a></li>
+			<li {% if mastername == "SubscriberRegistry" %}class="active"{% endif %}><a href='/subscriberregistry/actions'><span>SubscriberRegistry</span></a></li>
+			
+		</ul>
+	</div>
+	<div id="submenu">
+		<ul class="submenu">
+			
+			<li><a href="/openbts/main" {% if pagename == "Main" %}class="active"{% endif %}><span>Main</span></a></li>
+			<li><a href="/openbts/actions" {% if pagename == "Actions" %}class="active"{% endif %}><span>Actions</span></a></li>
+			<li><a href="/openbts/status" {% if pagename == "Status" %}class="active"{% endif %}><span>Live Status</span></a></li>
+			<li><a href="/openbts/advanced" {% if pagename == "Advanced" %}class="active"{% endif %}><span>Advanced</span></a></li>
+		</ul>
+	</div>
+<div id="content">
+{% if sectionlist %}
+<ul id="tabs-titles">
+	<li class="current">&#60;Add new&#62;</li>
+{% for section in sectionlist %}
+	<li>{{ section.name }}</li>
+{% endfor %}
+</ul>
+<div id="tabs-contents">
+		<div class="content">
+		<form method="post" action="/openbts/addparam/">
+			<table>
+			<tr><td class="parameter">Key name:</td><td><input type="text" name="keystring" class="input"/></td></tr>
+			<tr><td class="parameter">Value:</td><td><input type="text" name="valuestring" class="input"/></td></tr>
+			<tr><td class="parameter">Static (0/1):</td><td><input type="text" name="static" class="input"/></td></tr>
+			<tr><td class="parameter">Optional (0/1):</td><td><input type="text" name="optional" class="input"/></td></tr>
+			<tr><td class="parameter">Comments:</td><td><input type="text" name="comments" class="input"/></td></tr>
+			<tr><td><input type="submit" value="Add key to DB" /></td></tr>
+			</table>
+		</form>
+		</div>
+	{% for section in sectionlist %}
+		<div class="content">
+		<form method="post" action="/openbts/advanced/">
+			<table>
+				{% for item in section.paramlist %}
+					<tr>
+					<td class="parameter">{{ item.keystring }}</td>
+						<td>
+							<input type="text" name="{{ item.keystring }}" value="{% if item.valuestring %}{{ item.valuestring }}{% else %}[NULL]{% endif %}" class="input"/>
+						</td>
+						<td>
+							<td>{% ifequal item.optional 1 %}<input type="button" value="Delete" onClick="sendFormDelete('{{ item.keystring}}')"/>{% endifequal %}</td>
+						</td>
+					</tr>
+					<tr>
+						<td class="comment">{{ item.comments }}</td>
+					</tr>
+				{% endfor %}
+					<tr><td><input type="submit" value="Save" class="btnsave"/></td></tr>
+			</table>
+		</form>
+		</div>
+	{% endfor %}
+	<form name="deleteParam" method="post" action="/openbts/advanced/">
+		<input type="hidden" name="paramToDelete" value=""/>
+	</form>
+</div>
+{% endif %}
+</div>
+</body>
+</html>
