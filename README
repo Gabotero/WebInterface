@@ -1,0 +1,6 @@
+Modified files:
+
+  - /openbts-webui/settings.py
+  - /openbts-webui/manage.py
+  - /openbts-webui/webgui/views.py (def sbrdialdata(request))
+  - /openbts-webui/webgui/html/webgui/sbr_dialdata.html
